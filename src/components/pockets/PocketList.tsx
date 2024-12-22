@@ -5,6 +5,7 @@ import { usePocketStore } from '@/store/pocketStore';
 import { useTaskStore } from '@/store/taskStore';
 import EmojiPicker from 'emoji-picker-react';
 import { motion } from 'framer-motion';
+import { LogoutButton } from '@/components/LogoutButton';
 
 export function PocketList() {
     const {
@@ -39,6 +40,7 @@ export function PocketList() {
             setNewPocketName('');
             setSelectedEmoji('📂');
             setIsModalOpen(false);
+            await fetchPockets();
         } catch (error) {
             console.error('Error creating pocket:', error);
         }
@@ -50,7 +52,7 @@ export function PocketList() {
             <h2 className="text-lg font-semibold mb-4">Pockets</h2>
 
             {/* Pocket List */}
-            <div className="space-y-2">
+            <div className="flex-1 overflow-y-auto space-y-2">
                 {pocketsWithCounts.map((pocket) => (
                     <motion.div
                         key={pocket._id}
@@ -144,9 +146,7 @@ export function PocketList() {
                                                 setSelectedEmoji(emoji.emoji);
                                                 setShowEmojiPicker(false);
                                             }}
-                                            theme="light"
                                             width="100%"
-                                            disableSearchBar={true}
                                         />
                                     </div>
                                 </div>
@@ -155,6 +155,29 @@ export function PocketList() {
                     </motion.div>
                 </div>
             )}
+
+            {/* User Profile Section */}
+            <div
+                className="flex items-center justify-between p-4 bg-gray-50 border-t border-gray-200 mt-4 rounded-lg shadow-sm"
+            >
+                {/* User Profile */}
+                <div className="flex items-center gap-4">
+                    <img
+                        src="https://via.placeholder.com/40"
+                        alt="User profile"
+                        className="w-12 h-12 rounded-full object-cover border border-gray-300 shadow"
+                    />
+                    <div>
+                        <p className="font-semibold text-gray-900">Claudia Doumit</p>
+                        <p className="text-sm text-gray-500">User Profile</p>
+                    </div>
+                </div>
+
+                {/* Logout Button */}
+                <div>
+                    <LogoutButton className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer" />
+                </div>
+            </div>
         </div>
     );
 }

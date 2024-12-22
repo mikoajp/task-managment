@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 
 interface LogoutButtonProps {
-    className?: string; // Allow className prop
+    className?: string;
 }
 
 export function LogoutButton({ className }: LogoutButtonProps) {

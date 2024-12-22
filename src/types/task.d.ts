@@ -11,6 +11,6 @@ export interface Task {
     _id: string;
     description: string;
     pocketId: string;
-    completed: boolean; // Zgodnie z backendem
-    isCompleted?: boolean; // Opcjonalna właściwość dla kompatybilności
+    completed: boolean;
+    isCompleted?: boolean;
 }

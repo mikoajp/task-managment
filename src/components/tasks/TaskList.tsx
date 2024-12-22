@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { AddTask } from './addTask';
 import { TaskItem } from './TaskItem';
 import { useTaskStore } from '@/store/taskStore';
+import { usePocketStore } from '@/store/pocketStore';
 import { Button } from '@/components/ui/Button';
 
 interface TaskListProps {
@@ -14,6 +15,7 @@ interface TaskListProps {
 
 export function TaskList({ pocketId, pocketName = 'Home', pocketEmoji = '🏠' }: TaskListProps) {
     const { tasks, fetchTasks, isLoading, error } = useTaskStore();
+    const { fetchAllPocketsWithTasks } = usePocketStore();
     const [showAll, setShowAll] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -24,6 +26,12 @@ export function TaskList({ pocketId, pocketName = 'Home', pocketEmoji = '🏠' }
             );
         }
     }, [pocketId, fetchTasks]);
+
+    useEffect(() => {
+        fetchAllPocketsWithTasks().catch((err) =>
+            console.error('Error updating pocket task counts:', err)
+        );
+    }, [tasks, fetchAllPocketsWithTasks]);
 
     const completedTasks = tasks.filter((task) => task.isCompleted).length;
     const filteredTasks = tasks.filter((task) => showAll || !task.isCompleted);
@@ -75,7 +83,12 @@ export function TaskList({ pocketId, pocketName = 'Home', pocketEmoji = '🏠' }
             {/* Task List */}
             <div className="space-y-2">
                 {filteredTasks.map((task) => (
-                    <TaskItem key={task._id} task={task} pocketId={pocketId}/>
+                    <TaskItem
+                        key={task._id}
+                        task={task}
+                        pocketId={pocketId}
+                        onTaskUpdated={() => fetchAllPocketsWithTasks()}
+                    />
                 ))}
             </div>
 
@@ -105,7 +118,11 @@ export function TaskList({ pocketId, pocketName = 'Home', pocketEmoji = '🏠' }
                         </div>
                         <AddTask
                             pocketId={pocketId}
-                            onTaskAdded={() => setIsModalOpen(false)}
+                            onTaskAdded={() => {
+                                setIsModalOpen(false);
+                                fetchTasks(pocketId);
+                                fetchAllPocketsWithTasks(); // Odśwież liczbę zadań w kieszeniach
+                            }}
                         />
                     </div>
                 </div>

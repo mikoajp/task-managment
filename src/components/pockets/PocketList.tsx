@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { usePocketStore } from '@/store/pocketStore';
-import { useTaskStore } from '@/store/taskStore';
 import { PocketItem } from './PocketItem';
 import EmojiPicker from 'emoji-picker-react';
 import { LogoutButton } from '@/components/LogoutButton';
@@ -12,12 +11,11 @@ export function PocketList() {
     const {
         pockets,
         selectedPocketId,
-        fetchPockets,
+        fetchAllPocketsWithTasks,
         createPocket,
         selectPocket,
         deletePocket,
     } = usePocketStore();
-    const { tasks, fetchTasks } = useTaskStore();
 
     const [newPocketName, setNewPocketName] = useState('');
     const [selectedEmoji, setSelectedEmoji] = useState('📂');
@@ -25,23 +23,10 @@ export function PocketList() {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
     useEffect(() => {
-        fetchPockets().catch((err) => console.error('Error fetching pockets:', err));
-    }, [fetchPockets]);
-
-    useEffect(() => {
-        const loadTasksForPocket = async () => {
-            if (selectedPocketId) {
-                try {
-                    await fetchTasks(selectedPocketId);
-                } catch (error) {
-                    console.error('Error loading tasks:', error);
-                }
-            }
-        };
-
-        loadTasksForPocket();
-    }, [selectedPocketId, fetchTasks]);
-
+        fetchAllPocketsWithTasks().catch((err) =>
+            console.error('Error fetching pockets with tasks:', err)
+        );
+    }, [fetchAllPocketsWithTasks]);
 
     const handleCreatePocket = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -52,7 +37,7 @@ export function PocketList() {
             setNewPocketName('');
             setSelectedEmoji('📂');
             setIsModalOpen(false);
-            await fetchPockets();
+            await fetchAllPocketsWithTasks();
         } catch (error) {
             console.error('Error creating pocket:', error);
         }
@@ -65,24 +50,21 @@ export function PocketList() {
             {/* Pocket List */}
             <div className="flex-grow space-y-2 overflow-y-auto">
                 {pockets.map((pocket) => {
-                    const pocketTasks = tasks.filter(task => task.pocketId === pocket._id);
+                    const incompleteTasks = pocket.tasks?.filter((task) => !task.isCompleted) || [];
+
                     return (
                         <PocketItem
                             key={pocket._id}
                             id={pocket._id}
                             name={pocket.name}
                             emoji={pocket.emoji}
-                            taskCount={pocketTasks.length}
+                            taskCount={incompleteTasks.length}
                             isSelected={selectedPocketId === pocket._id}
-                            onSelect={(id) => {
-                                selectPocket(id);
-                                fetchTasks(id);
-                            }}
+                            onSelect={(id) => selectPocket(id)}
                             onDelete={deletePocket}
                         />
                     );
                 })}
-
 
                 {/* Add Pocket Button */}
                 <motion.div
@@ -128,6 +110,7 @@ export function PocketList() {
                             ← Go Back
                         </button>
 
+                        {/* Form */}
                         <form onSubmit={handleCreatePocket} className="space-y-4">
                             <div className="flex gap-2 items-center">
                                 <button

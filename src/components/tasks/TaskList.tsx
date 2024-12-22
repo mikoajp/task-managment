@@ -6,7 +6,14 @@ import { TaskItem } from './TaskItem';
 import { useTaskStore } from '@/store/taskStore';
 import { Button } from '@/components/ui/Button';
 
-export function TaskList({ pocketId }: { pocketId: string }) {
+
+interface TaskListProps {
+    pocketId: string;
+    pocketName?: string;
+    pocketEmoji?: string;
+}
+
+export function TaskList({ pocketId, pocketName = 'Home', pocketEmoji = '🏠' }: TaskListProps) {
     const { tasks, fetchTasks, isLoading, error } = useTaskStore();
     const [showAll, setShowAll] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,7 +44,10 @@ export function TaskList({ pocketId }: { pocketId: string }) {
         <div className="space-y-4 relative">
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">🏠 Home</h2>
+                <h2 className="text-xl font-semibold">
+                    <span className="mr-2">{pocketEmoji}</span>
+                    {pocketName}
+                </h2>
                 <p className="text-gray-500">
                     Remaining {tasks.filter((task) => !task.isCompleted).length} from {tasks.length} tasks.
                 </p>

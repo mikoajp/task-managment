@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 
 export default function Home() {
   const router = useRouter();
-  const { selectedPocketId } = usePocketStore();
+  const { selectedPocketId, pockets  } = usePocketStore();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -18,6 +18,9 @@ export default function Home() {
       router.push('/auth/login');
     }
   }, [router]);
+
+
+  const selectedPocket = pockets.find(p => p._id === selectedPocketId);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -80,7 +83,11 @@ export default function Home() {
             >
               <div className="bg-white shadow-sm rounded-lg p-4">
                 {selectedPocketId ? (
-                    <TaskList pocketId={selectedPocketId} />
+                    <TaskList
+                        pocketId={selectedPocketId}
+                        pocketName={selectedPocket?.name}
+                        pocketEmoji={selectedPocket?.emoji}
+                    />
                 ) : (
                     <div className="text-center py-12">
                       <p className="text-gray-500">

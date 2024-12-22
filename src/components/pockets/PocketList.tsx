@@ -17,7 +17,10 @@ export function PocketList() {
     const { tasks } = useTaskStore();
 
     const [newPocketName, setNewPocketName] = useState('');
+    const [selectedEmoji, setSelectedEmoji] = useState('📂');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const commonEmojis = ['📂', '📚', '🏠', '💼', '🎮', '🎵', '🎨', '💪', '🍔', '✈️'];
 
     useEffect(() => {
         fetchPockets().catch((err) => console.error('Error fetching pockets:', err));
@@ -33,9 +36,9 @@ export function PocketList() {
         if (!newPocketName.trim()) return;
 
         try {
-            const emoji = '📂';
-            await createPocket(newPocketName.trim(), emoji);
+            await createPocket(newPocketName.trim(), selectedEmoji);
             setNewPocketName('');
+            setSelectedEmoji('📂');
             setIsModalOpen(false);
             await fetchPockets();
         } catch (error) {
@@ -108,19 +111,53 @@ export function PocketList() {
                     <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
                         <h3 className="text-lg font-semibold mb-4">Create New Pocket</h3>
                         <form onSubmit={handleCreatePocket} className="space-y-4">
-                            <input
-                                type="text"
-                                value={newPocketName}
-                                onChange={(e) => setNewPocketName(e.target.value)}
-                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
-                                placeholder="Enter pocket name"
-                                autoFocus
-                            />
+                            <div className="flex gap-2">
+                                <div className="relative">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                        className="p-3 border rounded-lg hover:bg-gray-50 text-xl"
+                                    >
+                                        {selectedEmoji}
+                                    </button>
+                                    {showEmojiPicker && (
+                                        <div className="absolute top-12 left-0 bg-white border rounded-lg shadow-lg p-3 z-50">
+                                            <div className="grid grid-cols-5 gap-3 w-[250px]">
+                                                {commonEmojis.map((emoji) => (
+                                                    <button
+                                                        key={emoji}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setSelectedEmoji(emoji);
+                                                            setShowEmojiPicker(false);
+                                                        }}
+                                                        className="p-2 hover:bg-gray-100 rounded-md transition-colors duration-200 text-xl flex items-center justify-center"
+                                                    >
+                                                        {emoji}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                <input
+                                    type="text"
+                                    value={newPocketName}
+                                    onChange={(e) => setNewPocketName(e.target.value)}
+                                    className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
+                                    placeholder="Enter pocket name"
+                                    autoFocus
+                                />
+                            </div>
                             <div className="flex justify-between">
                                 <button
                                     type="button"
                                     className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
-                                    onClick={() => setIsModalOpen(false)}
+                                    onClick={() => {
+                                        setIsModalOpen(false);
+                                        setShowEmojiPicker(false);
+                                        setSelectedEmoji('📂');
+                                    }}
                                 >
                                     Cancel
                                 </button>
@@ -135,7 +172,6 @@ export function PocketList() {
                     </div>
                 </div>
             )}
-
             {/* User Info */}
             <div className="flex items-center gap-4 p-3 border-t border-gray-200 mt-4">
                 <img

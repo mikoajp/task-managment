@@ -45,7 +45,6 @@ export const usePocketStore = create<PocketStore>((set) => ({
             const data = await response.json();
 
             set({ pockets: data });
-            console.log('Fetched pockets:', data);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to fetch pockets';
             console.error('Error while fetching pockets:', errorMessage);
@@ -74,7 +73,6 @@ export const usePocketStore = create<PocketStore>((set) => ({
             });
 
             const responseText = await response.text();
-            console.log('Raw server response:', responseText);
 
             if (!response.ok) {
                 const errorData = JSON.parse(responseText);
@@ -83,7 +81,6 @@ export const usePocketStore = create<PocketStore>((set) => ({
             }
 
             const data = JSON.parse(responseText);
-            console.log('Pocket created successfully:', data);
             return data;
         } catch (error) {
             console.error('Error while creating pocket:', error);

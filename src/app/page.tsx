@@ -1,4 +1,3 @@
-// src/app/page.tsx
 'use client';
 
 import { useEffect } from 'react';
@@ -10,7 +9,7 @@ import { motion } from 'framer-motion';
 
 export default function Home() {
   const router = useRouter();
-  const { selectedPocketId, pockets  } = usePocketStore();
+  const { selectedPocketId, pockets } = usePocketStore();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -18,7 +17,6 @@ export default function Home() {
       router.push('/auth/login');
     }
   }, [router]);
-
 
   const selectedPocket = pockets.find(p => p._id === selectedPocketId);
 
@@ -37,68 +35,46 @@ export default function Home() {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
-      opacity: 1,
+      opacity: 1
     }
   };
 
   return (
       <motion.main
-          className="min-h-screen bg-gray-50 py-8"
+          className="min-h-screen w-full bg-gray-50 flex"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header  */}
-          <motion.div
-              className="mb-8 flex justify-between items-center"
-              variants={itemVariants}
-          >
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Task Management
-              </h1>
-              <p className="mt-2 text-sm text-gray-600">
-                Organize your tasks efficiently with pockets
-              </p>
-            </div>
-          </motion.div>
+        {/* Sidebar */}
+        <motion.aside
+            className="w-1/4 bg-white shadow-md p-4"
+            variants={itemVariants}
+        >
+          <PocketList />
+        </motion.aside>
 
-          {/* Main Content */}
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Sidebar - Pockets */}
-            <motion.div
-                className="w-full md:w-64 flex-shrink-0"
-                variants={itemVariants}
-            >
-              <div className="bg-white shadow-sm rounded-lg p-4">
-                <PocketList />
-              </div>
-            </motion.div>
+        {/* Main Content */}
+        <motion.section
+            className="flex-1 bg-gray-100 p-6"
+            variants={itemVariants}
+        >
 
-            {/* Main Content - Tasks */}
-            <motion.div
-                className="flex-1"
-                variants={itemVariants}
-            >
-              <div className="bg-white shadow-sm rounded-lg p-4">
-                {selectedPocketId ? (
-                    <TaskList
-                        pocketId={selectedPocketId}
-                        pocketName={selectedPocket?.name}
-                        pocketEmoji={selectedPocket?.emoji}
-                    />
-                ) : (
-                    <div className="text-center py-12">
-                      <p className="text-gray-500">
-                        Select a pocket to view tasks
-                      </p>
-                    </div>
-                )}
-              </div>
-            </motion.div>
+          {/* Tasks Section */}
+          <div className="bg-white shadow-sm rounded-lg p-4">
+            {selectedPocketId ? (
+                <TaskList
+                    pocketId={selectedPocketId}
+                    pocketName={selectedPocket?.name}
+                    pocketEmoji={selectedPocket?.emoji}
+                />
+            ) : (
+                <div className="text-center py-12">
+                  <p className="text-gray-500">Select a pocket to view tasks</p>
+                </div>
+            )}
           </div>
-        </div>
+        </motion.section>
       </motion.main>
   );
 }

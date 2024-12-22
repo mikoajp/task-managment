@@ -37,7 +37,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
             }
 
             const url = `/api/pockets/${pocketId}/tasks`;
-            console.log('Fetching tasks from URL:', url); // Loguj URL
 
             const response = await fetch(url, {
                 headers: {
@@ -54,12 +53,10 @@ export const useTaskStore = create<TaskStore>((set) => ({
             const data = await response.json();
 
             // Mapowanie `_id` na `id`
-            const tasks = data.map((task: any) => ({
+            const tasks = data.map((task: Task) => ({
                 ...task,
-                id: task._id, // Przypisz `_id` do `id`
+                id: task._id,
             }));
-
-            console.log('Mapped tasks:', tasks); // Debuguj przemapowane dane
 
             set({ tasks, error: null });
         } catch (err) {
@@ -100,7 +97,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
                 error: null
             }));
 
-            console.log('Task added successfully:', newTask);
             return newTask;
         } catch (err) {
             console.error('Error adding task:', err);
@@ -176,7 +172,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
                 error: null
             }));
 
-            console.log('Task deleted successfully');
         } catch (err) {
             console.error('Error deleting task:', err);
             set({ error: err instanceof Error ? err.message : 'Failed to delete task' });

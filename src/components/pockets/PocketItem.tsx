@@ -16,31 +16,42 @@ export const PocketItem = ({ id, name, emoji, isSelected, onSelect, onDelete }: 
     return (
         <motion.div
             whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             className={`
-        p-3 rounded-lg cursor-pointer transition-colors
-        ${isSelected ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-100'}
-        border
-      `}
+                p-4 rounded-lg cursor-pointer transition-all shadow-sm border flex items-center justify-between gap-4
+                ${isSelected ? 'bg-purple-100 border-purple-400' : 'bg-white border-gray-200 hover:bg-gray-50'}
+            `}
             onClick={() => onSelect(id)}
         >
-            <div className="flex items-center justify-between">
-                {/* Wyświetlanie nazwy z emoji */}
-                <span className="font-medium">
-                    {emoji} {name}
+            {/* Pocket Content */}
+            <div className="flex items-center gap-3">
+                <div
+                    className={`
+                        flex items-center justify-center w-10 h-10 text-lg font-bold rounded-full
+                        ${isSelected ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-700'}
+                    `}
+                >
+                    {emoji}
+                </div>
+                <span className="text-base font-medium truncate">
+                    {name}
                 </span>
-                {onDelete && (
-                    <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onDelete(id);
-                        }}
-                    >
-                        Usuń
-                    </Button>
-                )}
             </div>
+
+            {/* Delete Button */}
+            {onDelete && (
+                <Button
+                    variant="danger"
+                    size="sm"
+                    className="flex-shrink-0"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(id);
+                    }}
+                >
+                    Delete
+                </Button>
+            )}
         </motion.div>
     );
 };

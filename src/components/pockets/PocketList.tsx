@@ -58,9 +58,9 @@ export function PocketList() {
                         {pocketsWithCounts.map((pocket) => (
                             <motion.div
                                 key={pocket._id}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
+                                initial={{opacity: 0, y: 10}}
+                                animate={{opacity: 1, y: 0}}
+                                exit={{opacity: 0, y: -10}}
                                 className={`flex items-center justify-between p-3 rounded-lg cursor-pointer border ${
                                     selectedPocketId === pocket._id
                                         ? 'bg-purple-500 text-white'
@@ -87,9 +87,9 @@ export function PocketList() {
                         {/* Add Pocket Button */}
                         <motion.div
                             key="create-pocket-button"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
+                            initial={{opacity: 0, y: 10}}
+                            animate={{opacity: 1, y: 0}}
+                            exit={{opacity: 0, y: -10}}
                             className="flex items-center justify-between gap-4 p-3 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200"
                             onClick={() => setIsModalOpen(true)}
                         >
@@ -121,7 +121,8 @@ export function PocketList() {
                                         {selectedEmoji}
                                     </button>
                                     {showEmojiPicker && (
-                                        <div className="absolute top-12 left-0 bg-white border rounded-lg shadow-lg p-3 z-50">
+                                        <div
+                                            className="absolute top-12 left-0 bg-white border rounded-lg shadow-lg p-3 z-50">
                                             <div className="grid grid-cols-5 gap-3 w-[250px]">
                                                 {commonEmojis.map((emoji) => (
                                                     <button
@@ -172,16 +173,26 @@ export function PocketList() {
                     </div>
                 </div>
             )}
-            {/* User Info */}
-            <div className="flex items-center gap-4 p-3 border-t border-gray-200 mt-4">
-                <img
-                    src="https://via.placeholder.com/40"
-                    alt="User profile"
-                    className="w-10 h-10 rounded-full object-cover"
-                />
+            <div
+                className="flex items-center justify-between p-4 bg-gray-50 border-t border-gray-200 mt-4 rounded-lg shadow-sm">
+                {/* User Profile */}
+                <div className="flex items-center gap-4">
+                    <img
+                        src="https://via.placeholder.com/40"
+                        alt="User profile"
+                        className="w-12 h-12 rounded-full object-cover border border-gray-300 shadow"
+                    />
+                    <div>
+                        <p className="font-semibold text-gray-900">Claudia Doumit</p>
+                        <p className="text-sm text-gray-500">User Profile</p>
+                    </div>
+                </div>
+
+                {/* Logout Button */}
                 <div>
-                    <p className="font-medium text-gray-800">Claudia Doumit</p>
-                    <LogoutButton />
+                    <LogoutButton
+                        className=" text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
+                    />
                 </div>
             </div>
         </div>

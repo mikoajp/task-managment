@@ -5,7 +5,6 @@ const API_URL = 'https://recruitment-task.jakubcloud.pl';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        console.log('Login attempt with:', body);
 
         const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
@@ -15,9 +14,7 @@ export async function POST(request: Request) {
             body: JSON.stringify(body)
         });
 
-        console.log('API Response status:', response.status);
         const data = await response.json();
-        console.log('API Response data:', data);
 
         if (!response.ok) {
             return NextResponse.json(data, { status: response.status });

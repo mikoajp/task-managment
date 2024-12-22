@@ -18,7 +18,6 @@ export async function OPTIONS() {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        console.log('Sending registration data:', body);
 
         const response = await fetch(`${API_URL}/auth/register`, {
             method: 'POST',
@@ -37,7 +36,6 @@ export async function POST(request: Request) {
         const data = await response.json();
         const status = response.status;
 
-        console.log('API response:', { status, data });
 
         if (!response.ok) {
             return NextResponse.json(data, { status });

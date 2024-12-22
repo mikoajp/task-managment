@@ -3,7 +3,11 @@
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 
-export function LogoutButton() {
+interface LogoutButtonProps {
+    className?: string; // Allow className prop
+}
+
+export function LogoutButton({ className }: LogoutButtonProps) {
     const router = useRouter();
 
     const handleLogout = () => {
@@ -14,7 +18,11 @@ export function LogoutButton() {
     };
 
     return (
-        <Button onClick={handleLogout} variant="secondary">
+        <Button
+            onClick={handleLogout}
+            variant="secondary"
+            className={className}
+        >
             Logout
         </Button>
     );

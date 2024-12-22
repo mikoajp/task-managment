@@ -13,8 +13,6 @@ export async function POST(request: Request) {
         }
 
         const requestBody = await request.json();
-        console.log('Auth header received:', authHeader);
-        console.log('Request body:', requestBody);
 
         const response = await fetch(`${API_URL}/pockets`, {
             method: 'POST',

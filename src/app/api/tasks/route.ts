@@ -12,7 +12,6 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        console.log('Request body:', body);
 
         const pocketId = request.url.split('/').slice(-2)[0];
         const response = await fetch(`${API_URL}/pockets/${pocketId}/tasks`, {
@@ -39,20 +38,36 @@ export async function POST(request: Request) {
     }
 }
 
-export async function PUT(
-    request: Request,
-    { params }: { params: { pocketId: string; taskId: string } }
-) {
+export async function PUT(request: Request) {
     try {
-        const token = request.headers.get('Authorization');
+        const authHeader = request.headers.get('Authorization');
+        if (!authHeader) {
+            return NextResponse.json(
+                { message: 'Authorization header is required' },
+                { status: 401 }
+            );
+        }
+
+        const urlSegments = request.url.split('/');
+        const pocketId = urlSegments[urlSegments.length - 3]; // `pockets/:pocketId/tasks/:taskId`
+        const taskId = urlSegments[urlSegments.length - 1];
+
+        if (!pocketId || !taskId) {
+            return NextResponse.json(
+                { message: 'Pocket ID and Task ID are required in the URL' },
+                { status: 400 }
+            );
+        }
+
         const body = await request.json();
 
+
         const response = await fetch(
-            `${API_URL}/pockets/${params.pocketId}/tasks/${params.taskId}`,
+            `${API_URL}/pockets/${pocketId}/tasks/${taskId}`,
             {
                 method: 'PUT',
                 headers: {
-                    'Authorization': token || '',
+                    'Authorization': authHeader,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(body),
@@ -67,7 +82,7 @@ export async function PUT(
         const data = await response.json();
         return NextResponse.json(data);
     } catch (error) {
-        console.error('Update task error:', error);
+        console.error('Error in PUT handler:', error);
         return NextResponse.json(
             { message: 'Failed to update task' },
             { status: 500 }

@@ -16,6 +16,8 @@ interface TaskItemProps {
 export function TaskItem({ task, pocketId }: TaskItemProps) {
     const { updateTask, deleteTask, fetchTasks } = useTaskStore();
     const [showMenu, setShowMenu] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedDescription, setEditedDescription] = useState(task.description);
 
     const handleToggleComplete = async () => {
         try {
@@ -27,6 +29,75 @@ export function TaskItem({ task, pocketId }: TaskItemProps) {
             console.error('Error toggling task completion:', err);
         }
     };
+
+    const handleEdit = () => {
+        setIsEditing(true);
+        setShowMenu(false);
+    };
+
+    const handleSaveEdit = async () => {
+        if (editedDescription.trim() === '') {
+            alert('Task description cannot be empty');
+            return;
+        }
+
+        try {
+            await updateTask(pocketId, task._id, {
+                description: editedDescription.trim(),
+                isCompleted: task.isCompleted,
+            });
+            setIsEditing(false);
+        } catch (err) {
+            console.error('Error updating task:', err);
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setEditedDescription(task.description);
+        setIsEditing(false);
+    };
+
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSaveEdit();
+        } else if (e.key === 'Escape') {
+            handleCancelEdit();
+        }
+    };
+
+    if (isEditing) {
+        return (
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="flex items-center gap-4 p-4 rounded-lg border border-purple-300 bg-purple-50"
+            >
+                <input
+                    type="text"
+                    value={editedDescription}
+                    onChange={(e) => setEditedDescription(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    className="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    autoFocus
+                />
+                <div className="flex gap-2">
+                    <button
+                        onClick={handleSaveEdit}
+                        className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                    >
+                        Save
+                    </button>
+                    <button
+                        onClick={handleCancelEdit}
+                        className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </motion.div>
+        );
+    }
 
     return (
         <div className="relative">
@@ -44,7 +115,7 @@ export function TaskItem({ task, pocketId }: TaskItemProps) {
                         type="checkbox"
                         checked={task.isCompleted}
                         onChange={handleToggleComplete}
-                        className="sr-only peer" // Ukrycie domyślnego checkboxa
+                        className="sr-only peer"
                     />
                     <div className="w-6 h-6 flex items-center justify-center border-2 rounded-lg border-gray-300 bg-white peer-checked:bg-purple-500 peer-checked:border-purple-500 transition-all">
                         {task.isCompleted && (
@@ -96,16 +167,19 @@ export function TaskItem({ task, pocketId }: TaskItemProps) {
 
             {/* Dropdown Menu */}
             {showMenu && (
-                <div
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-md z-10 border border-gray-200"
-                    onClick={() => setShowMenu(false)}
-                >
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-md z-10 border border-gray-200">
                     <div className="py-1">
                         <button
                             onClick={handleToggleComplete}
                             className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                         >
                             {task.isCompleted ? 'Mark as incomplete' : 'Mark as completed'}
+                        </button>
+                        <button
+                            onClick={handleEdit}
+                            className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                            Edit task
                         </button>
                         <button
                             onClick={() => deleteTask(pocketId, task._id)}

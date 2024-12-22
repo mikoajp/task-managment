@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { api } from '@/lib/api';
 import {CreateTaskDto, UpdateTaskDto} from "@/types/task";
 
 interface Task {

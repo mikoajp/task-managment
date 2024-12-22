@@ -17,22 +17,31 @@ export function PocketList() {
         selectPocket,
         deletePocket,
     } = usePocketStore();
-    const { tasks } = useTaskStore();
+    const { tasks, fetchTasks } = useTaskStore();
 
     const [newPocketName, setNewPocketName] = useState('');
     const [selectedEmoji, setSelectedEmoji] = useState('📂');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
-    // Fetch pockets on mount
     useEffect(() => {
         fetchPockets().catch((err) => console.error('Error fetching pockets:', err));
     }, [fetchPockets]);
 
-    const pocketsWithCounts = pockets.map((pocket) => {
-        const taskCount = tasks.filter((task) => task.pocketId === pocket._id).length;
-        return { ...pocket, count: taskCount };
-    });
+    useEffect(() => {
+        const loadTasksForPocket = async () => {
+            if (selectedPocketId) {
+                try {
+                    await fetchTasks(selectedPocketId);
+                } catch (error) {
+                    console.error('Error loading tasks:', error);
+                }
+            }
+        };
+
+        loadTasksForPocket();
+    }, [selectedPocketId, fetchTasks]);
+
 
     const handleCreatePocket = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -43,7 +52,7 @@ export function PocketList() {
             setNewPocketName('');
             setSelectedEmoji('📂');
             setIsModalOpen(false);
-            await fetchPockets(); // Odświeżenie listy kieszeni po dodaniu
+            await fetchPockets();
         } catch (error) {
             console.error('Error creating pocket:', error);
         }
@@ -55,25 +64,25 @@ export function PocketList() {
 
             {/* Pocket List */}
             <div className="flex-grow space-y-2 overflow-y-auto">
-                {pocketsWithCounts.map((pocket) => (
-                    <PocketItem
-                        key={pocket._id}
-                        id={pocket._id}
-                        name={pocket.name}
-                        emoji={pocket.emoji}
-                        taskCount={pocket.count}
-                        isSelected={selectedPocketId === pocket._id}
-                        onSelect={(id) => selectPocket(id)}
-                        onDelete={async (id) => {
-                            try {
-                                await deletePocket(id);
-                                await fetchPockets(); // Odświeżenie listy po usunięciu
-                            } catch (error) {
-                                console.error('Error deleting pocket:', error);
-                            }
-                        }}
-                    />
-                ))}
+                {pockets.map((pocket) => {
+                    const pocketTasks = tasks.filter(task => task.pocketId === pocket._id);
+                    return (
+                        <PocketItem
+                            key={pocket._id}
+                            id={pocket._id}
+                            name={pocket.name}
+                            emoji={pocket.emoji}
+                            taskCount={pocketTasks.length}
+                            isSelected={selectedPocketId === pocket._id}
+                            onSelect={(id) => {
+                                selectPocket(id);
+                                fetchTasks(id);
+                            }}
+                            onDelete={deletePocket}
+                        />
+                    );
+                })}
+
 
                 {/* Add Pocket Button */}
                 <motion.div

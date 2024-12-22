@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { usePocketStore } from '@/store/pocketStore';
 import { useTaskStore } from '@/store/taskStore';
+import { PocketItem } from './PocketItem';
 import EmojiPicker from 'emoji-picker-react';
-import { motion } from 'framer-motion';
 import { LogoutButton } from '@/components/LogoutButton';
 
 export function PocketList() {
@@ -14,6 +15,7 @@ export function PocketList() {
         fetchPockets,
         createPocket,
         selectPocket,
+        deletePocket,
     } = usePocketStore();
     const { tasks } = useTaskStore();
 
@@ -22,6 +24,7 @@ export function PocketList() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
+    // Fetch pockets on mount
     useEffect(() => {
         fetchPockets().catch((err) => console.error('Error fetching pockets:', err));
     }, [fetchPockets]);
@@ -40,49 +43,40 @@ export function PocketList() {
             setNewPocketName('');
             setSelectedEmoji('📂');
             setIsModalOpen(false);
-            await fetchPockets();
+            await fetchPockets(); // Odświeżenie listy kieszeni po dodaniu
         } catch (error) {
             console.error('Error creating pocket:', error);
         }
     };
 
     return (
-        <div className="flex flex-col h-screen p-4 bg-white rounded-lg shadow-md">
-            {/* Header */}
+        <div className="flex flex-col h-full p-4 bg-white rounded-lg shadow-md">
             <h2 className="text-lg font-semibold mb-4">Pockets</h2>
 
             {/* Pocket List */}
-            <div className="flex-1 overflow-y-auto space-y-2">
+            <div className="flex-grow space-y-2 overflow-y-auto">
                 {pocketsWithCounts.map((pocket) => (
-                    <motion.div
+                    <PocketItem
                         key={pocket._id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={`flex items-center justify-between p-3 rounded-lg cursor-pointer border ${
-                            selectedPocketId === pocket._id
-                                ? 'bg-purple-500 text-white'
-                                : 'bg-gray-50 hover:bg-gray-100'
-                        }`}
-                        onClick={() => selectPocket(pocket._id)}
-                    >
-                        <div className="flex items-center gap-2">
-                            <span className="text-lg">{pocket.emoji}</span>
-                            <span className="font-medium">{pocket.name}</span>
-                        </div>
-                        <span
-                            className={`text-sm ${
-                                selectedPocketId === pocket._id
-                                    ? 'bg-white text-purple-500'
-                                    : 'bg-gray-200 text-gray-800'
-                            } px-2 py-1 rounded-lg`}
-                        >
-                            {pocket.count}
-                        </span>
-                    </motion.div>
+                        id={pocket._id}
+                        name={pocket.name}
+                        emoji={pocket.emoji}
+                        taskCount={pocket.count}
+                        isSelected={selectedPocketId === pocket._id}
+                        onSelect={(id) => selectPocket(id)}
+                        onDelete={async (id) => {
+                            try {
+                                await deletePocket(id);
+                                await fetchPockets(); // Odświeżenie listy po usunięciu
+                            } catch (error) {
+                                console.error('Error deleting pocket:', error);
+                            }
+                        }}
+                    />
                 ))}
 
                 {/* Add Pocket Button */}
-                <div
+                <motion.div
                     className="flex items-center justify-between gap-4 p-3 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200"
                     onClick={() => setIsModalOpen(true)}
                 >
@@ -90,7 +84,23 @@ export function PocketList() {
                         <span className="text-lg">➕</span>
                         <span className="font-medium">Create new pocket</span>
                     </div>
+                </motion.div>
+            </div>
+
+            {/* User Info */}
+            <div className="flex items-center justify-between p-4 mt-4 bg-gray-50 border-t border-gray-200 rounded-lg shadow-sm">
+                <div className="flex items-center gap-4">
+                    <img
+                        src="https://via.placeholder.com/40"
+                        alt="User profile"
+                        className="w-12 h-12 rounded-full object-cover border border-gray-300 shadow"
+                    />
+                    <div>
+                        <p className="font-semibold text-gray-900">Claudia Doumit</p>
+                        <p className="text-sm text-gray-500">User Profile</p>
+                    </div>
                 </div>
+                <LogoutButton className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer" />
             </div>
 
             {/* Create Pocket Modal */}
@@ -104,15 +114,11 @@ export function PocketList() {
                         {/* Back Button */}
                         <button
                             onClick={() => setIsModalOpen(false)}
-                            className="text-purple-600 text-sm mb-4"
+                            className="text-sm text-purple-600 hover:text-purple-800 mb-4"
                         >
-                            ← Go back
+                            ← Go Back
                         </button>
 
-                        {/* Form Header */}
-                        <h3 className="text-lg font-bold mb-4">Create a new pocket</h3>
-
-                        {/* Emoji Picker */}
                         <form onSubmit={handleCreatePocket} className="space-y-4">
                             <div className="flex gap-2 items-center">
                                 <button
@@ -126,7 +132,7 @@ export function PocketList() {
                                     type="text"
                                     value={newPocketName}
                                     onChange={(e) => setNewPocketName(e.target.value)}
-                                    placeholder="My new pocket"
+                                    placeholder="Pocket name"
                                     className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
                                 />
                                 <button
@@ -137,47 +143,22 @@ export function PocketList() {
                                 </button>
                             </div>
 
+                            {/* Emoji Picker */}
                             {showEmojiPicker && (
-                                <div className="mt-4 overflow-auto border rounded-lg">
-                                    <p className="font-medium mb-2">Select emoji</p>
-                                    <div className="rounded-lg bg-white">
-                                        <EmojiPicker
-                                            onEmojiClick={(emoji) => {
-                                                setSelectedEmoji(emoji.emoji);
-                                                setShowEmojiPicker(false);
-                                            }}
-                                            width="100%"
-                                        />
-                                    </div>
+                                <div className="mt-4 border rounded-lg bg-white overflow-hidden">
+                                    <EmojiPicker
+                                        onEmojiClick={(emoji) => {
+                                            setSelectedEmoji(emoji.emoji);
+                                            setShowEmojiPicker(false);
+                                        }}
+                                        width="100%"
+                                    />
                                 </div>
                             )}
                         </form>
                     </motion.div>
                 </div>
             )}
-
-            {/* User Profile Section */}
-            <div
-                className="flex items-center justify-between p-4 bg-gray-50 border-t border-gray-200 mt-4 rounded-lg shadow-sm"
-            >
-                {/* User Profile */}
-                <div className="flex items-center gap-4">
-                    <img
-                        src="https://via.placeholder.com/40"
-                        alt="User profile"
-                        className="w-12 h-12 rounded-full object-cover border border-gray-300 shadow"
-                    />
-                    <div>
-                        <p className="font-semibold text-gray-900">Claudia Doumit</p>
-                        <p className="text-sm text-gray-500">User Profile</p>
-                    </div>
-                </div>
-
-                {/* Logout Button */}
-                <div>
-                    <LogoutButton className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer" />
-                </div>
-            </div>
         </div>
     );
 }

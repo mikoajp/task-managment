@@ -90,7 +90,7 @@ export function CompleteProfileModal({ onClose }: { onClose: () => void }) {
                         disabled={isLoading}
                         className="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 disabled:opacity-50"
                     >
-                        {isLoading ? 'Updating...' : 'Complete Information'}
+                        {'Complete Information'}
                     </button>
                 </form>
             </motion.div>

@@ -5,8 +5,7 @@ import { motion } from 'framer-motion';
 import { usePocketStore } from '@/store/pocketStore';
 import { PocketItem } from './PocketItem';
 import EmojiPicker from 'emoji-picker-react';
-
-import {UserInfo} from "@/components/UserInfo";
+import { UserInfo } from '@/components/UserInfo';
 
 export function PocketList() {
     const {
@@ -69,34 +68,39 @@ export function PocketList() {
 
                 {/* Add Pocket Button */}
                 <motion.div
-                    className="flex items-center justify-between gap-4 p-3 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200"
+                    className="flex items-center justify-between p-3 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200"
                     onClick={() => setIsModalOpen(true)}
                 >
                     <div className="flex items-center gap-2">
                         <span className="text-lg">➕</span>
                         <span className="font-medium">Create new pocket</span>
                     </div>
+                    <span className="text-lg font-bold">⌘ N</span>
                 </motion.div>
             </div>
 
             {/* User Info */}
-            <UserInfo />
+            <UserInfo/>
 
             {/* Create Pocket Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6"
+                        initial={{opacity: 0, y: -50}}
+                        animate={{opacity: 1, y: 0}}
+                        exit={{ opacity: 0, y: 50 }}
+                        className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative"
                     >
-                        {/* Back Button */}
+                        {/* Close Button */}
                         <button
                             onClick={() => setIsModalOpen(false)}
-                            className="text-sm text-purple-600 hover:text-purple-800 mb-4"
+                            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 focus:outline-none"
                         >
-                            ← Go Back
+                            ✕
                         </button>
+
+                        {/* Modal Header */}
+                        <h3 className="text-lg font-semibold mb-4">Create a new pocket</h3>
 
                         {/* Form */}
                         <form onSubmit={handleCreatePocket} className="space-y-4">
@@ -115,17 +119,11 @@ export function PocketList() {
                                     placeholder="Pocket name"
                                     className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"
                                 />
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
-                                >
-                                    Create
-                                </button>
                             </div>
 
                             {/* Emoji Picker */}
                             {showEmojiPicker && (
-                                <div className="mt-4 border rounded-lg bg-white overflow-hidden">
+                                <div className="mt-4 border rounded-lg bg-white p-4">
                                     <EmojiPicker
                                         onEmojiClick={(emoji) => {
                                             setSelectedEmoji(emoji.emoji);
@@ -135,6 +133,13 @@ export function PocketList() {
                                     />
                                 </div>
                             )}
+
+                            <button
+                                type="submit"
+                                className="w-full px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
+                            >
+                                Create
+                            </button>
                         </form>
                     </motion.div>
                 </div>

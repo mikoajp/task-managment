@@ -126,12 +126,13 @@ export function TaskList({ pocketId, pocketName = 'Home', pocketEmoji = '🏠' }
             <div className="hidden md:block fixed bottom-4 left-1/2 transform -translate-x-1/2">
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-4 px-10 py-4 bg-gray-900 text-white rounded-full shadow-lg hover:bg-gray-800 focus:outline-none"
+                    className="flex items-center justify-between gap-4 px-12 py-4 bg-gray-900 text-white rounded-full shadow-lg hover:bg-gray-800 focus:outline-none w-[300px]"
                 >
                     <span className="text-sm font-medium">Create new task</span>
                     <span className="text-lg font-bold">⌘ N</span>
                 </button>
             </div>
+
 
             {/* Add Task Modal */}
             {isModalOpen && (

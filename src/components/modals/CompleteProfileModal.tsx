@@ -9,11 +9,9 @@ export function CompleteProfileModal({ onClose }: { onClose: () => void }) {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [avatar, setAvatar] = useState<File | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
 
         try {
             await updateUserInfo(firstName, lastName);
@@ -26,8 +24,6 @@ export function CompleteProfileModal({ onClose }: { onClose: () => void }) {
             onClose();
         } catch (error) {
             console.error('Error updating profile:', error);
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -87,10 +83,9 @@ export function CompleteProfileModal({ onClose }: { onClose: () => void }) {
 
                     <button
                         type="submit"
-                        disabled={isLoading}
-                        className="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 disabled:opacity-50"
+                        className="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600"
                     >
-                        {'Complete Information'}
+                        Complete Information
                     </button>
                 </form>
             </motion.div>

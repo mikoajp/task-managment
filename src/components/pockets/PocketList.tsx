@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { usePocketStore } from '@/store/pocketStore';
 import { PocketItem } from './PocketItem';
 import EmojiPicker from 'emoji-picker-react';
+
 import {UserInfo} from "@/components/UserInfo";
 
 export function PocketList() {

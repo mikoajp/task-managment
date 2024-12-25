@@ -61,8 +61,8 @@ export function TaskList({ pocketId, pocketName = 'Home', pocketEmoji = '🏠' }
 
     return (
         <div className="space-y-4 relative">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-4">
+            {/* Header - Desktop */}
+            <div className="hidden md:flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold flex items-center gap-2">
                     <span>{pocketEmoji}</span>
                     {pocketName}
@@ -80,6 +80,26 @@ export function TaskList({ pocketId, pocketName = 'Home', pocketEmoji = '🏠' }
                 </Button>
             </div>
 
+            {/* Header - Mobile */}
+            <div className="md:hidden space-y-4">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-lg font-semibold flex items-center gap-2">
+                        <span>{pocketEmoji}</span>
+                        {pocketName}
+                    </h2>
+                    <p className="text-sm text-gray-500">
+                        {tasks.length - completedTasks}/{tasks.length}
+                    </p>
+                </div>
+                <Button
+                    variant="secondary"
+                    onClick={() => setShowAll((prev) => !prev)}
+                    className="w-full"
+                >
+                    {showAll ? 'Show incomplete' : 'Show all'}
+                </Button>
+            </div>
+
             {/* Task List */}
             <div className="space-y-2">
                 {filteredTasks.map((task) => (
@@ -92,8 +112,18 @@ export function TaskList({ pocketId, pocketName = 'Home', pocketEmoji = '🏠' }
                 ))}
             </div>
 
-            {/* Floating Add Task Button */}
-            <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex justify-center">
+            {/* Create Task Button - Mobile */}
+            <div className="md:hidden fixed bottom-4 right-4">
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="w-14 h-14 bg-gray-900 text-white rounded-full shadow-lg flex items-center justify-center text-2xl"
+                >
+                    +
+                </button>
+            </div>
+
+            {/* Create Task Button - Desktop */}
+            <div className="hidden md:block fixed bottom-4 left-1/2 transform -translate-x-1/2">
                 <button
                     onClick={() => setIsModalOpen(true)}
                     className="flex items-center gap-4 px-10 py-4 bg-gray-900 text-white rounded-full shadow-lg hover:bg-gray-800 focus:outline-none"
@@ -105,9 +135,9 @@ export function TaskList({ pocketId, pocketName = 'Home', pocketEmoji = '🏠' }
 
             {/* Add Task Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6">
-                        <div className="flex justify-between items-center mb-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+                    <div className="bg-white rounded-lg shadow-lg w-full max-w-lg">
+                        <div className="flex justify-between items-center p-4 border-b">
                             <h3 className="text-lg font-bold text-gray-800">Add Task</h3>
                             <button
                                 onClick={() => setIsModalOpen(false)}
@@ -116,14 +146,16 @@ export function TaskList({ pocketId, pocketName = 'Home', pocketEmoji = '🏠' }
                                 ✕
                             </button>
                         </div>
-                        <AddTask
-                            pocketId={pocketId}
-                            onTaskAdded={() => {
-                                setIsModalOpen(false);
-                                fetchTasks(pocketId);
-                                fetchAllPocketsWithTasks(); // Odśwież liczbę zadań w kieszeniach
-                            }}
-                        />
+                        <div className="p-6">
+                            <AddTask
+                                pocketId={pocketId}
+                                onTaskAdded={() => {
+                                    setIsModalOpen(false);
+                                    fetchTasks(pocketId);
+                                    fetchAllPocketsWithTasks();
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
             )}

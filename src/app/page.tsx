@@ -57,23 +57,13 @@ export default function Home() {
                 />
               </svg>
             </button>
-            <h1 className="text-lg font-semibold">
-              {selectedPocket ? (
-                  <>
-                    <span className="mr-2">{selectedPocket.emoji}</span>
-                    {selectedPocket.name}
-                  </>
-              ) : (
-                  'Task Management'
-              )}
-            </h1>
             <div className="w-6" />
           </header>
 
           {/* Sidebar */}
           <div
               className={`
-            fixed inset-y-0 left-0 z-30 w-[80vw] sm:w-72 lg:relative lg:w-1/4 bg-white shadow-lg lg:shadow-none 
+            fixed inset-y-0 left-0 z-30 w-[80vw] mt-4 sm:w-72 lg:relative lg:w-1/4 bg-white shadow-lg lg:shadow-none 
             transform transition-transform duration-300 
             ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}
           >

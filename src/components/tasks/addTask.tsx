@@ -84,15 +84,6 @@ export function AddTask({ onTaskAdded }: { onTaskAdded: () => void }) {
                 </div>
             </div>
 
-            {/* Create New Pocket Button */}
-            <div
-                className="flex justify-between items-center mt-4 text-sm text-gray-500 cursor-pointer hover:text-gray-700">
-                <div className="flex items-center gap-2">
-                    <span className="text-lg font-medium text-purple-500">+</span>
-                    <span>Create new pocket</span>
-                </div>
-                <span className="px-2 py-1 rounded-lg border text-xs text-gray-400">⌘ P</span>
-            </div>
         </form>
     );
 }

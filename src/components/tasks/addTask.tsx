@@ -6,9 +6,8 @@ import { usePocketStore } from '@/store/pocketStore';
 
 export function AddTask({ onTaskAdded }: { onTaskAdded: () => void }) {
     const { createTask } = useTaskStore();
-    const { pockets, selectedPocketId, selectPocket } = usePocketStore(); // Dodano `selectPocket`
+    const { pockets, selectedPocketId, selectPocket } = usePocketStore();
     const [description, setDescription] = useState('');
-    const [completed, setCompleted] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -26,9 +25,8 @@ export function AddTask({ onTaskAdded }: { onTaskAdded: () => void }) {
         setError(null);
 
         try {
-            await createTask(selectedPocketId, { description, completed });
+            await createTask(selectedPocketId, { description, completed: false });
             setDescription('');
-            setCompleted(false);
             onTaskAdded();
         } catch (error) {
             console.error('Error adding task:', error);
@@ -37,64 +35,63 @@ export function AddTask({ onTaskAdded }: { onTaskAdded: () => void }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 bg-white rounded-lg shadow-md space-y-6">
+            {/* Error Message */}
             {error && <div className="text-sm text-red-500">{error}</div>}
 
-            {/* Pocket Selector */}
-            <div>
-                <label htmlFor="pocketSelector" className="block text-sm font-medium text-gray-700">
-                    Select Pocket
-                </label>
-                <div className="space-y-2 mt-2">
-                    {pockets.map((pocket) => (
-                        <div
-                            key={pocket._id}
-                            className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer ${
-                                selectedPocketId === pocket._id
-                                    ? 'bg-blue-50 border-blue-300'
-                                    : 'bg-white border-gray-200 hover:bg-gray-100'
-                            }`}
-                            onClick={() => selectPocket(pocket._id)} // Ustaw aktywną kieszeń
-                        >
-                            <div className="flex items-center gap-2">
-                                <span className="text-lg">{pocket.emoji}</span>
-                                <span className="text-sm font-medium">{pocket.name}</span>
-                            </div>
-                            {selectedPocketId === pocket._id && (
-                                <span className="text-sm text-blue-500">Selected</span>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Task Description */}
-            <div>
-                <label
-                    htmlFor="taskDescription"
-                    className="block text-sm font-medium text-gray-700"
-                >
-                    Task Description
-                </label>
+            {/* Task Input */}
+            <div className="relative">
                 <input
-                    id="taskDescription"
                     type="text"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Enter task description"
-                    className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Create a new task"
+                    className="w-full px-4 py-2 text-sm focus:outline-none focus:ring-0"
                 />
-            </div>
-
-
-            {/* Submit Button */}
-            <div className="flex justify-end">
                 <button
                     type="submit"
-                    className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500"
+                    className="absolute top-1/2 transform -translate-y-1/2 right-2 bg-purple-500 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-purple-600 focus:ring-2 focus:ring-purple-500"
                 >
-                    Add Task
+                    Create
                 </button>
+            </div>
+
+            {/* Pocket Selector */}
+            <div>
+                <h3 className="text-sm font-medium text-gray-900 mb-2">Select pocket</h3>
+                <div className="space-y-2">
+                    {pockets.map((pocket) => {
+                        const activeTasks = pocket.tasks?.filter((task) => !task.isCompleted) || [];
+
+                        return (
+                            <div
+                                key={pocket._id}
+                                className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer ${
+                                    selectedPocketId === pocket._id
+                                        ? 'bg-gray-100 border-purple-500'
+                                        : 'bg-white border-gray-200 hover:bg-gray-100'
+                                }`}
+                                onClick={() => selectPocket(pocket._id)}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <span className="text-lg">{pocket.emoji}</span>
+                                    <span className="text-sm font-medium text-gray-900">{pocket.name}</span>
+                                </div>
+                                <span className="text-xs font-medium text-gray-500">{activeTasks.length}</span>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* Create New Pocket Button */}
+            <div
+                className="flex justify-between items-center mt-4 text-sm text-gray-500 cursor-pointer hover:text-gray-700">
+                <div className="flex items-center gap-2">
+                    <span className="text-lg font-medium text-purple-500">+</span>
+                    <span>Create new pocket</span>
+                </div>
+                <span className="px-2 py-1 rounded-lg border text-xs text-gray-400">⌘ P</span>
             </div>
         </form>
     );

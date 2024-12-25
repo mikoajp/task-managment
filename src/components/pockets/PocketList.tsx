@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { usePocketStore } from '@/store/pocketStore';
 import { PocketItem } from './PocketItem';
 import EmojiPicker from 'emoji-picker-react';
-import { LogoutButton } from '@/components/LogoutButton';
+import {UserInfo} from "@/components/UserInfo";
 
 export function PocketList() {
     const {
@@ -79,20 +79,7 @@ export function PocketList() {
             </div>
 
             {/* User Info */}
-            <div className="flex items-center justify-between p-4 mt-4 bg-gray-50 border-t border-gray-200 rounded-lg shadow-sm">
-                <div className="flex items-center gap-4">
-                    <img
-                        src="https://via.placeholder.com/40"
-                        alt="User profile"
-                        className="w-12 h-12 rounded-full object-cover border border-gray-300 shadow"
-                    />
-                    <div>
-                        <p className="font-semibold text-gray-900">Claudia Doumit</p>
-                        <p className="text-sm text-gray-500">User Profile</p>
-                    </div>
-                </div>
-                <LogoutButton className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer" />
-            </div>
+            <UserInfo />
 
             {/* Create Pocket Modal */}
             {isModalOpen && (

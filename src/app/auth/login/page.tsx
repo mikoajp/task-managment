@@ -57,8 +57,8 @@ export default function LoginPage() {
             {/* Left Column */}
             <motion.div
                 className="flex flex-col justify-center items-center w-full max-w-lg px-6 lg:px-12 bg-white"
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{opacity: 0, x: -50}}
+                animate={{opacity: 1, x: 0}}
             >
                 <div className="w-full max-w-md space-y-8">
                     <h2 className="text-3xl font-bold text-gray-900">Login</h2>
@@ -141,10 +141,17 @@ export default function LoginPage() {
                     </div>
                 </div>
             </motion.div>
-
             {/* Right Column */}
-            <div className="hidden lg:flex w-full bg-gradient-to-br from-purple-500 via-pink-500 to-blue-500">
-                <div className="w-full h-full" style={{ backgroundSize: 'cover' }}></div>
+            <div
+                className="hidden lg:flex w-full"
+                style={{
+                    backgroundImage: `url('https://www.figma.com/file/ec1dfcM43bodPOThVvLSTx/image/931b03c7c63274b86931cd550f015cc597d600c6')`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                }}
+            >
+                <div className="w-full h-full"></div>
             </div>
         </div>
     );

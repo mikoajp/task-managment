@@ -6,6 +6,8 @@ import { TaskItem } from './TaskItem';
 import { useTaskStore } from '@/store/taskStore';
 import { usePocketStore } from '@/store/pocketStore';
 import { Button } from '@/components/ui/Button';
+import {CreateTaskModal} from "@/components/modals/CreateTaskModal";
+import { motion } from 'framer-motion';
 
 interface TaskListProps {
     pocketId: string;
@@ -123,43 +125,48 @@ export function TaskList({ pocketId, pocketName = 'Home', pocketEmoji = '🏠' }
             </div>
 
             {/* Create Task Button - Desktop */}
-            <div className="hidden md:block fixed bottom-4 left-1/2 transform -translate-x-1/2">
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="flex items-center justify-between gap-4 px-12 py-4 bg-gray-900 text-white rounded-full shadow-lg hover:bg-gray-800 focus:outline-none w-[300px]"
-                >
-                    <span className="text-sm font-medium">Create new task</span>
-                    <span className="text-lg font-bold">⌘ N</span>
-                </button>
+            <div className="hidden md:block fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+                <div className="relative">
+                    {/* Strzałka w górę */}
+                    {!isModalOpen && (
+                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 -translate-y-full">
+                            <div className="animate-bounce">
+                                <svg
+                                    className="w-6 h-6 text-gray-500"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                                </svg>
+                            </div>
+                        </div>
+                    )}
+
+                    <button
+                        onClick={() => setIsModalOpen(!isModalOpen)}
+                        className={`flex items-center justify-between gap-4 px-12 py-4 rounded-full shadow-lg focus:outline-none w-[500px] transition-all duration-200
+                ${isModalOpen ? 'bg-purple-700 text-white' : 'bg-gray-900 text-white hover:bg-gray-800'}`}
+                    >
+                        <span className="text-sm font-medium">Create new task</span>
+                        <span className="text-lg font-bold">⌘ N</span>
+                    </button>
+                </div>
             </div>
 
 
-            {/* Add Task Modal */}
-            {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-                    <div className="bg-white rounded-lg shadow-lg w-full max-w-lg">
-                        <div className="flex justify-between items-center p-4 border-b">
-                            <h3 className="text-lg font-bold text-gray-800">Add Task</h3>
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="text-gray-500 hover:text-gray-700 focus:outline-none"
-                            >
-                                ✕
-                            </button>
-                        </div>
-                        <div className="p-6">
-                            <AddTask
-                                pocketId={pocketId}
-                                onTaskAdded={() => {
-                                    setIsModalOpen(false);
-                                    fetchTasks(pocketId);
-                                    fetchAllPocketsWithTasks();
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
-            )}
+
+            {/* Create Task Modal */}
+            <CreateTaskModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                pocketId={pocketId}
+                onTaskAdded={() => {
+                    fetchTasks(pocketId);
+                    fetchAllPocketsWithTasks();
+                }}
+            />
         </div>
     );
 }
